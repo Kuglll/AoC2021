@@ -16,23 +16,33 @@ fun main() {
             tempGameboard = GameBoard()
             continue
         }
-        val row = line.replace("  ", " ").split(" ").map {
+        val row = line.trim().replace("  ", " ").split(" ").map {
             NumberOnBoard(it)
         }
         tempGameboard.numbers.add(row)
     }
 
+    var firstWinningBoard: GameBoard? = null
+    val winningBoards = mutableListOf<GameBoard>()
     loop@ for (number in drawnNumbers.split(",")) {
         for (gameboard in gameboards) {
             gameboard.markHitNumbers(number)
             if (gameboard.isBoardWinning()) {
-                println("Final score: ${gameboard.getSumOfAllUnmarkedNumbers() * number.toInt()}")
-                break@loop
+                if(firstWinningBoard == null){
+                    firstWinningBoard = gameboard
+                    println("Final score first winning board: ${gameboard.getSumOfAllUnmarkedNumbers() * number.toInt()}")
+                }
+                if(!winningBoards.contains(gameboard)){
+                    winningBoards.add(gameboard)
+                }
+                if(winningBoards.size == gameboards.size){
+                    // Last winning board
+                    println("Final score last winning board: ${gameboard.getSumOfAllUnmarkedNumbers() * number.toInt()}")
+                    break@loop
+                }
             }
         }
     }
-
-
 }
 
 class GameBoard(
